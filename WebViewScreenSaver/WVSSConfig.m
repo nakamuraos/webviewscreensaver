@@ -74,8 +74,13 @@ static NSString *const kScreenSaverURLListKey = @"kScreenSaverURLList";  // NSAr
   for (NSDictionary *addressDictionary in addressesFromUserDefaults) {
     NSString *url = addressDictionary[kWVSSAddressURLKey];
     NSInteger time = [addressDictionary[kWVSSAddressTimeKey] integerValue];
+    BOOL enabledInSavingMode = addressDictionary[kWVSSAddressEnabledInSavingModeKey]
+                               ? [addressDictionary[kWVSSAddressEnabledInSavingModeKey] boolValue]
+                               : YES;  // Default to YES for backward compatibility
     if (url) {
-      WVSSAddress *address = [WVSSAddress addressWithURL:url duration:time];
+      WVSSAddress *address = [WVSSAddress addressWithURL:url
+                                                 duration:time
+                                     enabledInSavingMode:enabledInSavingMode];
       [addresses addObject:address];
     }
   }
@@ -107,6 +112,25 @@ static NSString *const kScreenSaverURLListKey = @"kScreenSaverURLList";  // NSAr
 - (void)addAddressWithURL:(NSString *)url duration:(NSInteger)duration {
   WVSSAddress *address = [WVSSAddress addressWithURL:url duration:duration];
   [self.addresses addObject:address];
+}
+
+- (BOOL)isLowPowerModeEnabled {
+  NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+  if (@available(macOS 12.0, *)) {
+    return processInfo.isLowPowerModeEnabled;
+  }
+  return NO;
+}
+
+- (NSArray *)activeAddresses {
+  // If system is in Low Power Mode, filter to only enabled URLs
+  if ([self isLowPowerModeEnabled]) {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"enabledInSavingMode == YES"];
+    return [self.addresses filteredArrayUsingPredicate:predicate];
+  }
+
+  // Otherwise, return all addresses
+  return self.addresses;
 }
 
 - (void)fetchIfNeeded {

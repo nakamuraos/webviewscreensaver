@@ -31,6 +31,7 @@ static NSString *const kURLTableRow = @"kURLTableRow";
 // Configuration sheet columns.
 static NSString *const kTableColumnURL = @"url";
 static NSString *const kTableColumnTime = @"time";
+static NSString *const kTableColumnSavingMode = @"savingMode";
 static NSString *const kTableColumnPreview = @"preview";
 
 @interface WVSSConfigController ()
@@ -152,6 +153,12 @@ static NSString *const kTableColumnPreview = @"preview";
     [self.urlTable setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [self.urlTable registerForDraggedTypes:[NSArray arrayWithObject:kURLTableRow]];
 
+    // Set tooltip for Low Power column header
+    NSTableColumn *savingModeColumn = [self.urlTable tableColumnWithIdentifier:kTableColumnSavingMode];
+    if (savingModeColumn) {
+      [savingModeColumn setHeaderToolTip:@"Enable this URL when the system is in Low Power Mode (macOS 12+)"];
+    }
+
     [self.fetchURLCheckbox setIntegerValue:self.config.shouldFetchAddressList];
     [self.urlsURLField setEnabled:self.config.shouldFetchAddressList];
   }
@@ -180,6 +187,16 @@ static NSString *const kTableColumnPreview = @"preview";
   } else if ([identifier isEqual:kTableColumnTime]) {
     NSTableCellView *cellView = [tableView makeViewWithIdentifier:identifier owner:self];
     cellView.textField.stringValue = [[NSNumber numberWithLong:address.duration] stringValue];
+    return cellView;
+  } else if ([identifier isEqual:kTableColumnSavingMode]) {
+    NSTableCellView *cellView = [tableView makeViewWithIdentifier:identifier owner:self];
+    NSButton *checkbox = (NSButton *)cellView.subviews.firstObject;
+    if (checkbox && [checkbox isKindOfClass:[NSButton class]]) {
+      checkbox.state = address.enabledInSavingMode ? NSControlStateValueOn : NSControlStateValueOff;
+      checkbox.target = self;
+      checkbox.action = @selector(savingModeCheckboxChanged:);
+      checkbox.tag = row;
+    }
     return cellView;
   } else if ([identifier isEqual:kTableColumnPreview]) {
     NSTableCellView *cellView = [tableView makeViewWithIdentifier:identifier owner:self];
@@ -270,6 +287,14 @@ static NSString *const kTableColumnPreview = @"preview";
   self.config.shouldFetchAddressList = !currentValue;
   [self.fetchURLCheckbox setIntegerValue:self.config.shouldFetchAddressList];
   [self.urlsURLField setEnabled:self.config.shouldFetchAddressList];
+}
+
+- (IBAction)savingModeCheckboxChanged:(NSButton *)sender {
+  NSInteger row = sender.tag;
+  if (row >= 0 && row < self.config.addresses.count) {
+    WVSSAddress *address = [self.config.addresses objectAtIndex:row];
+    address.enabledInSavingMode = (sender.state == NSControlStateValueOn);
+  }
 }
 
 - (IBAction)previewButtonClicked:(NSButton *)sender {

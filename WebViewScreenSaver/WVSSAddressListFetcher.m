@@ -74,11 +74,21 @@ NSExceptionName const WVSSInvalidArgumentException = @"WVSSInvalidArgumentExcept
 
       id url = item[@"url"];
       id duration = item[@"duration"];
+      id enabledInSavingMode = item[@"enabledInSavingMode"];
 
       expectClass(url, NSString.class);
       expectClass(duration, NSNumber.class);
 
-      [parsed addObject:[WVSSAddress addressWithURL:url duration:[(NSNumber *)duration intValue]]];
+      // enabledInSavingMode is optional, defaults to YES for backward compatibility
+      BOOL savingModeEnabled = YES;
+      if (enabledInSavingMode != nil) {
+        expectClass(enabledInSavingMode, NSNumber.class);
+        savingModeEnabled = [(NSNumber *)enabledInSavingMode boolValue];
+      }
+
+      [parsed addObject:[WVSSAddress addressWithURL:url
+                                           duration:[(NSNumber *)duration intValue]
+                               enabledInSavingMode:savingModeEnabled]];
     }
 
     [self.delegate addressListFetcher:self didFinishWithArray:parsed];

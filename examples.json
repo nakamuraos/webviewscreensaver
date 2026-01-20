@@ -1,6 +1,6 @@
 [
-    { "url": "https://ykob.github.io/sketch-threejs/sketch/dna.html", "duration": 600},
-    { "url": "https://ykob.github.io/sketch-threejs/sketch/sun.html", "duration": 600},
+    { "url": "https://ykob.github.io/sketch-threejs/sketch/dna.html", "duration": 600, "enabledInSavingMode": true },
+    { "url": "https://ykob.github.io/sketch-threejs/sketch/sun.html", "duration": 600, "enabledInSavingMode": true },
     { "url": "http://www.google.com/trends/hottrends/visualize?pn=p1", "duration": 600 },
     { "url": "http://randomstreetview.com/#slideshow", "duration": 600 },
     { "url": "http://mrdoob.com/lab/javascript/webgl/clouds/", "duration": 600 },

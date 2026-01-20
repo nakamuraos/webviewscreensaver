@@ -298,11 +298,11 @@ NSNotificationName const WVSSPreviewStopped = @"webviewscreensaver.preview.stopp
 }
 
 - (NSUInteger)numberOfAddresses {
-  return _config.addresses.count;
+  return _config.activeAddresses.count;
 }
 
 - (WVSSAddress *)addressForIndex:(NSInteger)index {
-  return [_config.addresses objectAtIndex:index];
+  return [_config.activeAddresses objectAtIndex:index];
 }
 
 - (void)animateOneFrame {

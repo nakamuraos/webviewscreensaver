@@ -23,15 +23,20 @@
 
 extern NSString *const kWVSSAddressURLKey;
 extern NSString *const kWVSSAddressTimeKey;
+extern NSString *const kWVSSAddressEnabledInSavingModeKey;
 
 @interface WVSSAddress : NSObject
 @property(nonatomic, strong) NSString *url;
 @property(nonatomic, assign) NSInteger duration;
+@property(nonatomic, assign) BOOL enabledInSavingMode;
 
 + (NSString *)defaultAddressURL;
 + (NSInteger)defaultDuration;
 
 + (WVSSAddress *)addressWithURL:(NSString *)url duration:(NSInteger)duration;
++ (WVSSAddress *)addressWithURL:(NSString *)url
+                       duration:(NSInteger)duration
+           enabledInSavingMode:(BOOL)enabledInSavingMode;
 + (WVSSAddress *)defaultAddress;
 
 - (NSDictionary *)dictionaryRepresentation;

@@ -28,13 +28,21 @@ static NSString *const kScreenSaverDefaultURLKey = @"WVSSDefaultAddressURL";
 // Keys for the dictionaries in kScreenSaverURLList - string values should not be changed.
 NSString *const kWVSSAddressURLKey = @"kScreenSaverURL";
 NSString *const kWVSSAddressTimeKey = @"kScreenSaverTime";
+NSString *const kWVSSAddressEnabledInSavingModeKey = @"kScreenSaverEnabledInSavingMode";
 
 @implementation WVSSAddress
 
 + (WVSSAddress *)addressWithURL:(NSString *)url duration:(NSInteger)duration {
+  return [self addressWithURL:url duration:duration enabledInSavingMode:YES];
+}
+
++ (WVSSAddress *)addressWithURL:(NSString *)url
+                       duration:(NSInteger)duration
+           enabledInSavingMode:(BOOL)enabledInSavingMode {
   WVSSAddress *address = [[[self class] alloc] init];
   address.url = url;
   address.duration = duration;
+  address.enabledInSavingMode = enabledInSavingMode;
   return address;
 }
 
@@ -55,7 +63,11 @@ NSString *const kWVSSAddressTimeKey = @"kScreenSaverTime";
 }
 
 - (NSDictionary *)dictionaryRepresentation {
-  return @{kWVSSAddressURLKey : self.url, kWVSSAddressTimeKey : @(self.duration)};
+  return @{
+    kWVSSAddressURLKey : self.url,
+    kWVSSAddressTimeKey : @(self.duration),
+    kWVSSAddressEnabledInSavingModeKey : @(self.enabledInSavingMode)
+  };
 }
 
 - (NSString *)description {
